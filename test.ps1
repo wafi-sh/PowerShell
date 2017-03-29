@@ -1,6 +1,6 @@
 
 $WhatIfPreference = $false
-$env:COMPUTERNAME
+
 
 <#
 #$IPs = Get-Content -Path 'H:\Scripts\7\IPs.txt'
