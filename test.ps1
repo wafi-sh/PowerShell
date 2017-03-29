@@ -1,6 +1,8 @@
 
 $WhatIfPreference = $false
+$env:COMPUTERNAME
 
+<#
 #$IPs = Get-Content -Path 'H:\Scripts\7\IPs.txt'
 #$servers = Get-Content -Path 'H:\Scripts\7\servers.txt'
 
@@ -24,7 +26,7 @@ foreach ($server in $servers)
     }
 }
 
-
+#>
 <# Array
 
 $x = @()
@@ -51,8 +53,8 @@ $x = Get-ADUser -Filter {name -like "*"} -Properties name,surname,givenname,sama
 
 #Set Search
 cls
-$search = New-Object DirectoryServices.DirectorySearcher([ADSI]“”)
-$search.filter = “(servicePrincipalName=*)”
+$search = New-Object DirectoryServices.DirectorySearcher([ADSI]ï¿½ï¿½)
+$search.filter = ï¿½(servicePrincipalName=*)ï¿½
 $results = $search.Findall()
 
  
