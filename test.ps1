@@ -3,7 +3,7 @@
 
 $CDP = "165.237.227.60"; $NCE = "165.237.226.60"; $LAB = "10.64.132.60"; $NCW = "24.28.197.60";$cred = Get-Credential; 
 Get-Module -ListAvailable *vm* | Import-Module
-Connect-VIServer $ncw -Credential $cred
+Connect-VIServer $lab -Credential $cred
 
 
 # $x.runninginstance | select @{N="Name";E={($_.tag | ? key -Like "Name").value}}, instanceID, Platform, @{N="Power Status";E={$_.state.name}} | sort "power status" -Descending
