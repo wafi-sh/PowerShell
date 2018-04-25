@@ -31,36 +31,30 @@ function Get-VMCreationDetails
     {
         if(Check-Module 'vmware.vimautomation.core')
         {
-            if(Check-VIServerConnection '10.64.132.60')
-                {
-                    # Prepare $VMs array to add virtual machines to it
-                   $VMs = @()
-                    # Fetch all VM and store them in $VMs array
-                   foreach($VMName in $VMNames)
-                   {
-                        $VM = get-vm $VMName -EA SilentlyContinue
-                        if($vm -eq $null)
-                        {Write-Warning "Could not find a virtual machine named: $VMName"}
-                        else
-                        {$VMs += $vm}
-                   } #foreach
-                   if($vms.Length -gt 0)
-                   {
-                    # Get vCenter Events for virtual machines in $VMs and filter on create, deploy, register, or clone event
-                      Get-VIEvent -Entity $VMs -MaxSamples ([int]::MaxValue)|
-                      Where-Object {$_.gettype().name -in 'VmCreatedEvent','VmBeingDeployedEvent','VmRegisteredEvent','VmClonedEvent','VmDiscoveredEvent'}  |
-                      Select-Object @{n='VM';E={$_.Vm.name}},@{n='Action';E={$_.gettype().name}},CreatedTime,UserName |
-                      Sort-Object CreatedTime
-                   } #if $VMs.Length
-                   else
-                   {
-                    Write-Warning "No VMs to get details of!"
-                   } #else $VMs.Length
-                } #if Check-VIServerConnection
+            # Prepare $VMs array to add virtual machines to it
+            $VMs = @()
+            # Fetch all VM and store them in $VMs array
+            foreach($VMName in $VMNames)
+            {
+                $VM = get-vm $VMName -EA SilentlyContinue
+                if($vm -eq $null)
+                {Write-Warning "Could not find a virtual machine named: $VMName"}
                 else
-                {
-                    "No connection to vCenter Server"
-                } #else Check-VIServerConnection
+                {$VMs += $vm}
+            } #foreach
+            if($vms.Length -gt 0)
+            {
+            # Get vCenter Events for virtual machines in $VMs and filter on create, deploy, register, or clone event
+                Get-VIEvent -Entity $VMs -MaxSamples ([int]::MaxValue)|
+                Where-Object {$_.gettype().name -in 'VmCreatedEvent','VmBeingDeployedEvent','VmRegisteredEvent','VmClonedEvent','VmDiscoveredEvent'}  |
+                Select-Object @{n='VM';E={$_.Vm.name}},@{n='Action';E={$_.gettype().name}},CreatedTime,UserName |
+                Sort-Object CreatedTime
+            } #if $VMs.Length
+            else
+            {
+            Write-Warning "No VMs to get details of!"
+            } #else $VMs.Length
+               
         } #if check-module
         else
         {
