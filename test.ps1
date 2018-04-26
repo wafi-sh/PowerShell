@@ -1,9 +1,10 @@
-﻿
-<#
+﻿<#
 
-$CDP = "165.237.227.60"; $NCE = "165.237.226.60"; $LAB = "10.64.132.60"; $NCW = "24.28.197.60";$cred = Get-Credential; 
+$CDP = "165.237.227.60"; $NCE = "165.237.226.60"; $LAB = "10.64.132.60"; $NCW = "24.28.197.60"
+$cred = Get-Credential
 Get-Module -ListAvailable *vm* | Import-Module
-Connect-VIServer $lab -Credential $cred
+Connect-VIServer $ncw -Credential $cred
+
 
 
 # $x.runninginstance | select @{N="Name";E={($_.tag | ? key -Like "Name").value}}, instanceID, Platform, @{N="Power Status";E={$_.state.name}} | sort "power status" -Descending
@@ -11,7 +12,6 @@ $z = @("i-0b69c63bad778ae8f","i-0c302e26dd1a99891")
 
 $z | Start-EC2Instance
 #>
-
 
 
 
@@ -30,11 +30,33 @@ $result = foreach ($vm in $vms)
 
 
 <#
+foreach ($switch in $switchs0)
+{
+ New-VirtualPortGroup -Name "X-Stage-CM-Dup" -VLanId "2002" -VirtualSwitch $switch
+}
+#>
+
+<#
+
+foreach ($switch in $switchs)
+{
+    $portGroups = Get-VirtualPortGroup -VirtualSwitch $switch
+    foreach ($portgroup in $portGroups)
+    {
+        $policy = $portgroup | Get-NicTeamingPolicy
+        #$switch.VMHost.Name + " :: " + $switch.Name +" :: "+ $portgroup.name +" --> "+$policy.NetworkFailoverDetectionPolicy +" - "+$policy.LoadBalancingPolicy + " - "+ $policy.NotifySwitches +" - "+ $policy.FailbackEnabled
+        $policy | Set-NicTeamingPolicy -LoadBalancingPolicy LoadBalanceSrcId -NetworkFailoverDetectionPolicy LinkStatus -NotifySwitches $true -FailbackEnabled $true -InheritFailoverOrder $false
+    }
+    #$policy = $switch | Get-NicTeamingPolicy
+    #$switch.VMHost.Name + " :: " + $switch.Name +" :: "+ $portgroup.name +" --> "+$policy.NetworkFailoverDetectionPolicy +" - "+$policy.LoadBalancingPolicy + " - "+ $policy.NotifySwitches +" - "+ $policy.FailbackEnabled
+    #$policy | Set-NicTeamingPolicy -LoadBalancingPolicy LoadBalanceSrcId -NetworkFailoverDetectionPolicy LinkStatus -NotifySwitches $true -FailbackEnabled $true
+}
 
 #>
 
 
 
+# X-Stage-CM-Dup --> vlan 2002
 
 <#
 ### Create portgroup for each host and set policies for it.
