@@ -54,9 +54,15 @@ foreach ($switch in $switchs)
 
 #>
 
+foreach ($switch in $switchs0)
+{
+    $portgroup = Get-VirtualPortGroup -Name "Ten1-App2" -VirtualSwitch $switch 
+    $policy = $portgroup | Get-NicTeamingPolicy
+    $portgroup | Set-VirtualPortGroup -VLanId "10"
+    $policy | Set-NicTeamingPolicy -LoadBalancingPolicy LoadBalanceSrcId -NetworkFailoverDetectionPolicy LinkStatus -NotifySwitches $true -FailbackEnabled $true -InheritFailoverOrder $false
+}
 
-
-# X-Stage-CM-Dup --> vlan 2002
+# VoIP_CNTL --> vlan 20
 
 <#
 ### Create portgroup for each host and set policies for it.
